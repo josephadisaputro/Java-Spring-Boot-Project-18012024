@@ -1,8 +1,11 @@
 package com.yusufadisaputro.customerManagement.api.controller;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -15,6 +18,8 @@ import org.springframework.http.HttpStatus;
 
 import com.yusufadisaputro.customerManagement.api.model.Customer;
 import com.yusufadisaputro.customerManagement.api.service.CustomerService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 
 @RestController
 public class CustomerController {
@@ -24,19 +29,6 @@ public class CustomerController {
     @Autowired
     public CustomerController(CustomerService userService){
         this.userService = userService;
-    }
-    
-    @GetMapping("/api/v1/customer")
-    public ResponseEntity<?> getCustomerDetails(@RequestParam("id") String id){
-        int idNumber = Integer.parseInt(id);
-        Optional<Customer> user = userService.getUser(idNumber);
-        if (user.isPresent()) {
-            return ResponseEntity.ok(user.get());
-        } else {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "Customer not found");
-            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-        }
     }
 
     @PostMapping("/api/v1/customer")
@@ -50,4 +42,83 @@ public class CustomerController {
             return new ResponseEntity<>(error, ex.getStatusCode());
         }
     }
+
+    @GetMapping("/api/v1/customers")
+    public ResponseEntity<?> getCustomers(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "id") String sortByKey,
+        @RequestParam(defaultValue = "ASC") Sort.Direction sortOrder
+    ) {
+        try {
+            Page<Customer> customers = userService.getListOfCustomers(page, size, sortByKey, sortOrder);
+            return ResponseEntity.ok(customers);
+        } catch (ResponseStatusException ex) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", ex.getReason());
+            return new ResponseEntity<>(error, ex.getStatusCode());
+        }
+    }
+
+    @GetMapping("/api/v1/customers/{email}")
+    public ResponseEntity<?> getCustomersWithEmail(@PathVariable String email) {
+        try {
+            List<Customer> customers = userService.getListOfCustomersWithSimilarEmailAddress(email);
+            return ResponseEntity.ok(customers);
+        } catch (ResponseStatusException ex) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", ex.getReason());
+            return new ResponseEntity<>(error, ex.getStatusCode());
+        }
+    }
+
+    @GetMapping("/api/v1/customer/phone/{phoneNumber}")
+    public ResponseEntity<?> getCustomerWithPhone(@PathVariable String phoneNumber) {
+        try {
+            Customer customer = userService.getCustomerWithPhoneNumber(phoneNumber);
+            return ResponseEntity.ok(customer);
+        } catch (ResponseStatusException ex) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", ex.getReason());
+            return new ResponseEntity<>(error, ex.getStatusCode());
+        }
+    }
+
+    @GetMapping("/api/v1/customer/{id}")
+    public ResponseEntity<?> getCustomerDetails(@PathVariable("id") String id){
+        int idNumber = Integer.parseInt(id);
+        Optional<Customer> user = userService.getUser(idNumber);
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user.get());
+        } else {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Customer not found");
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/api/v1/customer")
+    public ResponseEntity<?> updateCustomer(@RequestBody Customer customer){
+        try {
+            Customer updatedCustomer = userService.updateCustomerData(customer);
+            return ResponseEntity.ok(updatedCustomer);
+        } catch (ResponseStatusException ex) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", ex.getReason());
+            return new ResponseEntity<>(error, ex.getStatusCode());
+        }
+    }
+
+    @DeleteMapping("/api/v1/customer/{id}")
+    public ResponseEntity<?> deleteCustomer(@PathVariable Integer id){
+        try {
+            Customer deletedCustomer = userService.updateCustomerAsDeleted(id);
+            return ResponseEntity.ok(deletedCustomer);
+        } catch (ResponseStatusException ex) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", ex.getReason());
+            return new ResponseEntity<>(error, ex.getStatusCode());
+        }
+    }
+
 }
