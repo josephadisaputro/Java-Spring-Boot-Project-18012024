@@ -1,10 +1,10 @@
-package com.example.yusufadisaputro;
+package com.yusufadisaputro.userManagement;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class YusufadisaputroApplicationTests {
+class UserManagementApplicationTests {
 
 	@Test
 	void contextLoads() {

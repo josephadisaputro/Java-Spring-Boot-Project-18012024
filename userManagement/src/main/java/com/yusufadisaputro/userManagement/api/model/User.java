@@ -1,4 +1,4 @@
-package com.example.yusufadisaputro.api.model;
+package com.yusufadisaputro.userManagement.api.model;
 
 import jakarta.persistence.*;
 

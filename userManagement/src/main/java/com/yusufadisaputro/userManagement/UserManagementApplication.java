@@ -1,13 +1,13 @@
-package com.example.yusufadisaputro;
+package com.yusufadisaputro.userManagement;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class YusufadisaputroApplication {
+public class UserManagementApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(YusufadisaputroApplication.class, args);
+		SpringApplication.run(UserManagementApplication.class, args);
 	}
 
 }
