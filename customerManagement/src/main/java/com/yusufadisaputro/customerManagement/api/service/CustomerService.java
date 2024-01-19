@@ -47,7 +47,7 @@ public class CustomerService {
         }
     }
 
-    public Optional<Customer> getUser(int id){
+    public Optional<Customer> getCustomer(int id){
         return customerRepository.findById(id);
     }
 

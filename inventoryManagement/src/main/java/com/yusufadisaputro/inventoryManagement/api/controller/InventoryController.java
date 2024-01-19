@@ -24,17 +24,17 @@ import org.springframework.data.domain.Sort;
 @RestController
 public class InventoryController {
 
-    private final InventoryService userService;
+    private final InventoryService inventoryService;
 
     @Autowired
-    public InventoryController(InventoryService userService){
-        this.userService = userService;
+    public InventoryController(InventoryService inventoryService){
+        this.inventoryService = inventoryService;
     }
 
     @PostMapping("/api/v1/inventory")
     public ResponseEntity<?> setUser(@RequestBody Inventory inventory){
         try {
-            Inventory savedNewinventory = userService.setNewInventory(inventory);
+            Inventory savedNewinventory = inventoryService.setNewInventory(inventory);
             return ResponseEntity.ok(savedNewinventory);
         } catch (ResponseStatusException ex) {
             Map<String, String> error = new HashMap<>();
@@ -51,7 +51,7 @@ public class InventoryController {
         @RequestParam(defaultValue = "ASC") Sort.Direction sortOrder
     ) {
         try {
-            Page<Inventory> inventories = userService.getListOfInventories(page, size, sortByKey, sortOrder);
+            Page<Inventory> inventories = inventoryService.getListOfInventories(page, size, sortByKey, sortOrder);
             return ResponseEntity.ok(inventories);
         } catch (ResponseStatusException ex) {
             Map<String, String> error = new HashMap<>();
@@ -63,7 +63,7 @@ public class InventoryController {
     @GetMapping("/api/v1/inventory/phone/{phoneNumber}")
     public ResponseEntity<?> getinventoryWithPhone(@PathVariable String phoneNumber) {
         try {
-            Inventory inventory = userService.getInventoryWithSKU(phoneNumber);
+            Inventory inventory = inventoryService.getInventoryWithSKU(phoneNumber);
             return ResponseEntity.ok(inventory);
         } catch (ResponseStatusException ex) {
             Map<String, String> error = new HashMap<>();
@@ -75,7 +75,7 @@ public class InventoryController {
     @GetMapping("/api/v1/inventory/{id}")
     public ResponseEntity<?> getinventoryDetails(@PathVariable("id") String id){
         int idNumber = Integer.parseInt(id);
-        Optional<Inventory> user = userService.getInventory(idNumber);
+        Optional<Inventory> user = inventoryService.getInventory(idNumber);
         if (user.isPresent()) {
             return ResponseEntity.ok(user.get());
         } else {
@@ -88,7 +88,7 @@ public class InventoryController {
     @PutMapping("/api/v1/inventory")
     public ResponseEntity<?> updateinventory(@RequestBody Inventory inventory){
         try {
-            Inventory updatedinventory = userService.updateInventoryData(inventory);
+            Inventory updatedinventory = inventoryService.updateInventoryData(inventory);
             return ResponseEntity.ok(updatedinventory);
         } catch (ResponseStatusException ex) {
             Map<String, String> error = new HashMap<>();
@@ -100,7 +100,7 @@ public class InventoryController {
     @DeleteMapping("/api/v1/inventory/{id}")
     public ResponseEntity<?> deleteinventory(@PathVariable Integer id){
         try {
-            Inventory deletedinventory = userService.updateInventoryAsDeleted(id);
+            Inventory deletedinventory = inventoryService.updateInventoryAsDeleted(id);
             return ResponseEntity.ok(deletedinventory);
         } catch (ResponseStatusException ex) {
             Map<String, String> error = new HashMap<>();

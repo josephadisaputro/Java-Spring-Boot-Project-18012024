@@ -30,7 +30,7 @@ public class InventoryService {
         try {
             return inventoryRepository.save(inventory);
         } catch (DataIntegrityViolationException ex) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Inventory with the same phone number already exists", ex);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Inventory with the same sku already exists", ex);
         }
     }
 
@@ -42,7 +42,7 @@ public class InventoryService {
 
     public Inventory getInventoryWithSKU(String sku) {
         return inventoryRepository.findBysku(sku)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer with the given phone number not found"));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer with the given sku not found"));
     }
 
     public Inventory updateInventoryData(Inventory inventory) {

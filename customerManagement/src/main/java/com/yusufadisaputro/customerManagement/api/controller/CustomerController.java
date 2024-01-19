@@ -24,17 +24,17 @@ import org.springframework.data.domain.Sort;
 @RestController
 public class CustomerController {
 
-    private final CustomerService userService;
+    private final CustomerService customerService;
 
     @Autowired
-    public CustomerController(CustomerService userService){
-        this.userService = userService;
+    public CustomerController(CustomerService customerService){
+        this.customerService = customerService;
     }
 
     @PostMapping("/api/v1/customer")
     public ResponseEntity<?> setUser(@RequestBody Customer customer){
         try {
-            Customer savedNewCustomer = userService.setNewCustomer(customer);
+            Customer savedNewCustomer = customerService.setNewCustomer(customer);
             return ResponseEntity.ok(savedNewCustomer);
         } catch (ResponseStatusException ex) {
             Map<String, String> error = new HashMap<>();
@@ -51,7 +51,7 @@ public class CustomerController {
         @RequestParam(defaultValue = "ASC") Sort.Direction sortOrder
     ) {
         try {
-            Page<Customer> customers = userService.getListOfCustomers(page, size, sortByKey, sortOrder);
+            Page<Customer> customers = customerService.getListOfCustomers(page, size, sortByKey, sortOrder);
             return ResponseEntity.ok(customers);
         } catch (ResponseStatusException ex) {
             Map<String, String> error = new HashMap<>();
@@ -63,7 +63,7 @@ public class CustomerController {
     @GetMapping("/api/v1/customers/{email}")
     public ResponseEntity<?> getCustomersWithEmail(@PathVariable String email) {
         try {
-            List<Customer> customers = userService.getListOfCustomersWithSimilarEmailAddress(email);
+            List<Customer> customers = customerService.getListOfCustomersWithSimilarEmailAddress(email);
             return ResponseEntity.ok(customers);
         } catch (ResponseStatusException ex) {
             Map<String, String> error = new HashMap<>();
@@ -75,7 +75,7 @@ public class CustomerController {
     @GetMapping("/api/v1/customer/phone/{phoneNumber}")
     public ResponseEntity<?> getCustomerWithPhone(@PathVariable String phoneNumber) {
         try {
-            Customer customer = userService.getCustomerWithPhoneNumber(phoneNumber);
+            Customer customer = customerService.getCustomerWithPhoneNumber(phoneNumber);
             return ResponseEntity.ok(customer);
         } catch (ResponseStatusException ex) {
             Map<String, String> error = new HashMap<>();
@@ -87,7 +87,7 @@ public class CustomerController {
     @GetMapping("/api/v1/customer/{id}")
     public ResponseEntity<?> getCustomerDetails(@PathVariable("id") String id){
         int idNumber = Integer.parseInt(id);
-        Optional<Customer> user = userService.getUser(idNumber);
+        Optional<Customer> user = customerService.getCustomer(idNumber);
         if (user.isPresent()) {
             return ResponseEntity.ok(user.get());
         } else {
@@ -100,7 +100,7 @@ public class CustomerController {
     @PutMapping("/api/v1/customer")
     public ResponseEntity<?> updateCustomer(@RequestBody Customer customer){
         try {
-            Customer updatedCustomer = userService.updateCustomerData(customer);
+            Customer updatedCustomer = customerService.updateCustomerData(customer);
             return ResponseEntity.ok(updatedCustomer);
         } catch (ResponseStatusException ex) {
             Map<String, String> error = new HashMap<>();
@@ -112,7 +112,7 @@ public class CustomerController {
     @DeleteMapping("/api/v1/customer/{id}")
     public ResponseEntity<?> deleteCustomer(@PathVariable Integer id){
         try {
-            Customer deletedCustomer = userService.updateCustomerAsDeleted(id);
+            Customer deletedCustomer = customerService.updateCustomerAsDeleted(id);
             return ResponseEntity.ok(deletedCustomer);
         } catch (ResponseStatusException ex) {
             Map<String, String> error = new HashMap<>();
