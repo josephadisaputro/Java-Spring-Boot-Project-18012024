@@ -74,9 +74,6 @@ public class SalesOrderService {
         }
     }
 
-
-
-
     public SalesOrder setNewSalesOrder(SalesOrder salesOrder){
         try {
             return salesOrderRepository.save(salesOrder);
@@ -91,9 +88,24 @@ public class SalesOrderService {
         );
     }
 
-    public SalesOrder getSalesOrderWithSalesOrderNumber(String salesOrderNumber) {
-        return salesOrderRepository.findBysalesOrderNumber(salesOrderNumber)
+    public SalesOrderResponse getSalesOrderWithSalesOrderNumber(String salesOrderNumber) {
+        SalesOrder salesOrder = salesOrderRepository.findBysalesOrderNumber(salesOrderNumber)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sales Order with the given sales order number not found"));
+
+        SalesOrderResponse salesOrderResponse = new SalesOrderResponse(salesOrder, null);
+        CompletableFuture<Customer> customerFuture = new CompletableFuture<>();
+        customerFutures.put(salesOrder.getCustomerId(), customerFuture);
+        kafkaTemplate.send("RequestCustomerDetails", String.valueOf(salesOrder.getCustomerId()));
+        try {
+            Customer customer = customerFuture.get(5, TimeUnit.SECONDS); // wait for customer details for up to 5 seconds
+            salesOrderResponse.setCustomer(customer);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            e.printStackTrace();
+            // handle exception
+        } finally {
+            customerFutures.remove(salesOrder.getCustomerId());
+        }
+        return salesOrderResponse;
     }
 
     public SalesOrder updateSalesOrderData(SalesOrder salesOrder) {

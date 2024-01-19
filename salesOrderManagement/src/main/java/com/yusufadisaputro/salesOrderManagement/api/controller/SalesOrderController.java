@@ -60,11 +60,11 @@ public class SalesOrderController {
         }
     }
 
-    @GetMapping("/api/v1/sales-order/phone/{salesOrderNumber}")
-    public ResponseEntity<?> getsalesOrderWithPhone(@PathVariable String salesOrderNumber) {
+    @GetMapping("/api/v1/sales-order/number/{salesOrderNumber}")
+    public ResponseEntity<?> getsalesOrderWithSalesOrderNumber(@PathVariable String salesOrderNumber) {
         try {
-            SalesOrder salesOrder = userService.getSalesOrderWithSalesOrderNumber(salesOrderNumber);
-            return ResponseEntity.ok(salesOrder);
+            SalesOrderResponse salesOrderResponse = userService.getSalesOrderWithSalesOrderNumber(salesOrderNumber);
+            return ResponseEntity.ok(salesOrderResponse);
         } catch (ResponseStatusException ex) {
             Map<String, String> error = new HashMap<>();
             error.put("error", ex.getReason());
