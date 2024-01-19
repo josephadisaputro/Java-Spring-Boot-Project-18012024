@@ -1,51 +1,33 @@
 package com.yusufadisaputro.salesOrderManagement.api.model;
 
-import jakarta.persistence.*;
+import com.yusufadisaputro.salesOrderManagement.api.model.*;
 
 import java.util.Date;
 import java.util.List;
 
-@Entity
-@Table(name = "sales_orders")
-
-public class SalesOrder {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+public class SalesOrderResponse {
     private Integer id;
-
-    @Column(name = "sales_order_number", unique = true, nullable = false)
     private String salesOrderNumber;
-
-    @Column(name = "customer_id", nullable = false)
-    private Integer customerId;
-
-    @Column(name = "delivery_address", nullable = false)
+    private Customer customer;
     private String deliveryAddress;
-
-    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true)
-    @JoinColumn(name = "sales_order_id")
     private List<ItemBought> items;
-
-    @Column(name = "is_deleted")
-    private boolean isDeleted = false;
-
-    @Column(name = "created_date")
+    private boolean isDeleted;
     private Date createdDate;
-
-    @Column(name = "last_updated_date")
     private Date lastUpdatedDate;
 
-    @PrePersist
-    protected void onCreate() {
-        createdDate = new Date();
-        lastUpdatedDate = new Date();
+    // Constructor
+    public SalesOrderResponse(SalesOrder salesOrder, Customer customer) {
+        this.id = salesOrder.getId();
+        this.salesOrderNumber = salesOrder.getSalesOrderNumber();
+        this.customer = customer;
+        this.deliveryAddress = salesOrder.getDeliveryAddress();
+        this.items = salesOrder.getItems();
+        this.isDeleted = salesOrder.getIsDeleted();
+        this.createdDate = salesOrder.getCreatedDate();
+        this.lastUpdatedDate = salesOrder.getLastUpdatedDate();
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        lastUpdatedDate = new Date();
-    }
-
+    // Setters and Getters
     public Integer getId() {
         return id;
     }
@@ -62,12 +44,12 @@ public class SalesOrder {
         this.salesOrderNumber = salesOrderNumber;
     }
 
-    public Integer getCustomerId() {
-        return customerId;
+    public Customer getCustomer() {
+        return customer;
     }
 
-    public void setCustomerId(Integer customerId) {
-        this.customerId = customerId;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     public String getDeliveryAddress() {
@@ -86,12 +68,12 @@ public class SalesOrder {
         this.items = items;
     }
 
-    public boolean getIsDeleted() {
+    public boolean isDeleted() {
         return isDeleted;
     }
 
-    public void setIsDeleted(boolean isDeleted) {
-        this.isDeleted = isDeleted;
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 
     public Date getCreatedDate() {

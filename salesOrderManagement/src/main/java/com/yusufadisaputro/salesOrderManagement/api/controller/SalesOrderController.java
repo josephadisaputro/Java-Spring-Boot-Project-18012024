@@ -75,14 +75,15 @@ public class SalesOrderController {
     @GetMapping("/api/v1/sales-order/{id}")
     public ResponseEntity<?> getsalesOrderDetails(@PathVariable("id") String id){
         int idNumber = Integer.parseInt(id);
-        Optional<SalesOrder> user = userService.getSalesOrder(idNumber);
-        if (user.isPresent()) {
-            return ResponseEntity.ok(user.get());
-        } else {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "salesOrder not found");
-            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-        }
+        SalesOrderResponse salesOrderResponse = userService.getSalesOrder(idNumber);
+        return ResponseEntity.ok(salesOrderResponse);
+        // if (user.isPresent()) {
+        //     return ResponseEntity.ok(salesOrderResponse);
+        // } else {
+        //     Map<String, String> error = new HashMap<>();
+        //     error.put("error", "salesOrder not found");
+        //     return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        // }
     }
 
     @PutMapping("/api/v1/sales-order")
