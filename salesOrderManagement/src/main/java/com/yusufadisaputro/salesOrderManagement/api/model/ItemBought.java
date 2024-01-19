@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "sales_order_items")
 public class ItemBought {
@@ -13,6 +15,7 @@ public class ItemBought {
 
     @ManyToOne
     @JoinColumn(name = "sales_order_id", nullable = false)
+    @JsonIgnore
     private SalesOrder salesOrder;
 
     @Column(name = "sku")

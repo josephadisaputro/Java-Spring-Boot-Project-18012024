@@ -24,17 +24,17 @@ import org.springframework.data.domain.Sort;
 @RestController
 public class SalesOrderController {
 
-    private final SalesOrderService userService;
+    private final SalesOrderService salesOrderService;
 
     @Autowired
-    public SalesOrderController(SalesOrderService userService){
-        this.userService = userService;
+    public SalesOrderController(SalesOrderService salesOrderService){
+        this.salesOrderService = salesOrderService;
     }
 
     @PostMapping("/api/v1/sales-order")
     public ResponseEntity<?> setUser(@RequestBody SalesOrder salesOrder){
         try {
-            SalesOrder savedNewsalesOrder = userService.setNewSalesOrder(salesOrder);
+            SalesOrder savedNewsalesOrder = salesOrderService.setNewSalesOrder(salesOrder);
             return ResponseEntity.ok(savedNewsalesOrder);
         } catch (ResponseStatusException ex) {
             Map<String, String> error = new HashMap<>();
@@ -51,7 +51,7 @@ public class SalesOrderController {
         @RequestParam(defaultValue = "ASC") Sort.Direction sortOrder
     ) {
         try {
-            Page<SalesOrder> salesOrders = userService.getListOfSalesOrders(page, size, sortByKey, sortOrder);
+            Page<SalesOrder> salesOrders = salesOrderService.getListOfSalesOrders(page, size, sortByKey, sortOrder);
             return ResponseEntity.ok(salesOrders);
         } catch (ResponseStatusException ex) {
             Map<String, String> error = new HashMap<>();
@@ -63,7 +63,7 @@ public class SalesOrderController {
     @GetMapping("/api/v1/sales-order/number/{salesOrderNumber}")
     public ResponseEntity<?> getsalesOrderWithSalesOrderNumber(@PathVariable String salesOrderNumber) {
         try {
-            SalesOrderResponse salesOrderResponse = userService.getSalesOrderWithSalesOrderNumber(salesOrderNumber);
+            SalesOrderResponse salesOrderResponse = salesOrderService.getSalesOrderWithSalesOrderNumber(salesOrderNumber);
             return ResponseEntity.ok(salesOrderResponse);
         } catch (ResponseStatusException ex) {
             Map<String, String> error = new HashMap<>();
@@ -75,7 +75,7 @@ public class SalesOrderController {
     @GetMapping("/api/v1/sales-order/{id}")
     public ResponseEntity<?> getsalesOrderDetails(@PathVariable("id") String id){
         int idNumber = Integer.parseInt(id);
-        SalesOrderResponse salesOrderResponse = userService.getSalesOrder(idNumber);
+        SalesOrderResponse salesOrderResponse = salesOrderService.getSalesOrder(idNumber);
         return ResponseEntity.ok(salesOrderResponse);
         // if (user.isPresent()) {
         //     return ResponseEntity.ok(salesOrderResponse);
@@ -89,7 +89,7 @@ public class SalesOrderController {
     @PutMapping("/api/v1/sales-order")
     public ResponseEntity<?> updatesalesOrder(@RequestBody SalesOrder salesOrder){
         try {
-            SalesOrder updatedsalesOrder = userService.updateSalesOrderData(salesOrder);
+            SalesOrder updatedsalesOrder = salesOrderService.updateSalesOrderData(salesOrder);
             return ResponseEntity.ok(updatedsalesOrder);
         } catch (ResponseStatusException ex) {
             Map<String, String> error = new HashMap<>();
@@ -101,7 +101,7 @@ public class SalesOrderController {
     @DeleteMapping("/api/v1/sales-order/{id}")
     public ResponseEntity<?> deletesalesOrder(@PathVariable Integer id){
         try {
-            SalesOrder deletedsalesOrder = userService.updateSalesOrderAsDeleted(id);
+            SalesOrder deletedsalesOrder = salesOrderService.updateSalesOrderAsDeleted(id);
             return ResponseEntity.ok(deletedsalesOrder);
         } catch (ResponseStatusException ex) {
             Map<String, String> error = new HashMap<>();

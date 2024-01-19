@@ -27,14 +27,12 @@ import com.google.gson.Gson;
 public class SalesOrderService {
 
     private final SalesOrderRepository salesOrderRepository;
+    private final ItemBoughtRepository itemBoughtRepository;
 
-    public SalesOrderService(SalesOrderRepository salesOrderRepository){
+    public SalesOrderService(SalesOrderRepository salesOrderRepository, ItemBoughtRepository itemBoughtRepository){
         this.salesOrderRepository = salesOrderRepository;
+        this.itemBoughtRepository = itemBoughtRepository;
     }
-
-    // public Optional<SalesOrder> getSalesOrder(int id){
-    //     return salesOrderRepository.findById(id);
-    // }
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
@@ -76,7 +74,15 @@ public class SalesOrderService {
 
     public SalesOrder setNewSalesOrder(SalesOrder salesOrder){
         try {
-            return salesOrderRepository.save(salesOrder);
+            System.out.println("my log ========================================== " + salesOrder.getItems());
+            salesOrder = salesOrderRepository.save(salesOrder);
+            if(salesOrder.getItems() != null) {
+                for(ItemBought item : salesOrder.getItems()) {
+                    item.setSalesOrder(salesOrder);
+                    itemBoughtRepository.save(item);
+                }
+            }
+            return salesOrder;
         } catch (DataIntegrityViolationException ex) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "SalesOrder with the same sales order number already exists", ex);
         }
@@ -111,10 +117,16 @@ public class SalesOrderService {
     public SalesOrder updateSalesOrderData(SalesOrder salesOrder) {
         return salesOrderRepository.findById(salesOrder.getId())
             .map(existingSalesOrder -> {
-                existingSalesOrder.setSalesOrderNumber(null);
-                existingSalesOrder.setCustomerId(null);
-                existingSalesOrder.setDeliveryAddress(null);
-                existingSalesOrder.setItems(null);
+                existingSalesOrder.setSalesOrderNumber(salesOrder.getSalesOrderNumber());
+                existingSalesOrder.setCustomerId(salesOrder.getCustomerId());
+                existingSalesOrder.setDeliveryAddress(salesOrder.getDeliveryAddress());
+                if(salesOrder.getItems() != null) {
+                    for(ItemBought item : salesOrder.getItems()) {
+                        item.setSalesOrder(existingSalesOrder);
+                        itemBoughtRepository.save(item);
+                    }
+                }
+                existingSalesOrder.setItems(salesOrder.getItems());
                 return salesOrderRepository.save(existingSalesOrder);
             })
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sales Order with the given id not found"));
